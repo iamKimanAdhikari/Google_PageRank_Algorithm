@@ -12,3 +12,5 @@
 
 # Allow folder structure so allowed files in subfolders are not ignored
 !*/
+
+/Dataset/
