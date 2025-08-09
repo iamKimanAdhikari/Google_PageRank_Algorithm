@@ -1,0 +1,14 @@
+# Ignore everything
+**
+
+# Allow Python files anywhere
+!*.py
+
+# Allow Markdown files anywhere
+!*.md
+
+# Allow .gitignore
+!.gitignore
+
+# Allow folder structure so allowed files in subfolders are not ignored
+!*/
