@@ -3,9 +3,9 @@ from animate_pagerank import PageRankAnimator
 
 def main():
     # Initialize PageRank
-    pr = PageRank(max_iterations=100)
+    pr = PageRank(max_iterations=25)
     
-    # Create animator with top 25 nodes
+    # Create animator with top k nodes
     animator = PageRankAnimator(pr, top_k=25)
     
     print("Computing PageRank with iteration history...")
