@@ -6,7 +6,7 @@ from scipy.sparse import csr_matrix
 
 class PageRank:
     def __init__(self, max_edges=None, max_iterations=100, min_diff=1e-6, d=0.85, cache_file="pagerank_cache.pkl"):
-        # Base parameters
+        # Paths and parameters
         self.filepath = Path(__file__).parent.parent / "Dataset"
         self.file = self.filepath / "web-Google.txt"
         self.max_edges = max_edges
@@ -16,15 +16,16 @@ class PageRank:
         self.cache_file = Path(cache_file)
 
     def load_graph(self):
-        """Load and preprocess the graph into a sparse transition matrix (with caching)."""
+        """Load graph into sparse matrix"""
 
-        # If cache exists, load directly to save time
+        # Load from cache
         if self.cache_file.exists():
-            print("Loading cached graph data...")
+            print("Loading cached graph...")
             with open(self.cache_file, "rb") as f:
                 self.M, self.node_to_index, self.N = pickle.load(f)
             return
 
+        # Read dataset
         print("Reading dataset...")
         df = pd.read_csv(
             self.file,
@@ -34,41 +35,40 @@ class PageRank:
             nrows=self.max_edges
         )
 
-        # Build node list and mapping (concat replaces old .append method)
+        # Create node map
         nodes = pd.concat([df["From"], df["To"]]).unique()
         self.node_to_index = {node: i for i, node in enumerate(nodes)}
         self.N = len(nodes)
 
-        # Map nodes to integer indices for matrix construction
+        # Convert to indices
         row_idx = df["From"].map(self.node_to_index)
         col_idx = df["To"].map(self.node_to_index)
 
-        # Calculate out-degree for each node (needed for probability weights)
+        # Calculate out-degree
         out_degree = df.groupby("From").size()
         out_degree_map = out_degree.to_dict()
 
-        # Each edge gets weight = 1 / (out-degree of source)
+        # Assign weights
         weights = [1.0 / out_degree_map[src] for src in df["From"]]
 
-        # Build sparse column-stochastic matrix (CSR format for speed)
-        # NOTE: Transposed logic → M[j, i] = probability from i → j
+        # Build sparse matrix
         self.M = csr_matrix((weights, (col_idx, row_idx)), shape=(self.N, self.N))
 
-        # Save to cache for future runs
+        # Save to cache
         print("Saving graph to cache...")
         with open(self.cache_file, "wb") as f:
             pickle.dump((self.M, self.node_to_index, self.N), f)
 
     def calculate_pagerank(self):
-        """Run the PageRank iterative calculation."""
-        ranks = np.full(self.N, 1.0 / self.N)  # Start with equal probability for all nodes
-        teleport = (1.0 - self.d) / self.N     # Constant teleportation value
+        """Run iterative PageRank"""
+        ranks = np.full(self.N, 1.0 / self.N)
+        teleport = (1.0 - self.d) / self.N
 
         for iteration in range(self.max_iterations):
-            # Core PageRank formula: PR = teleport + d * (M * PR)
+            # PR formula
             new_ranks = teleport + self.d * self.M.dot(ranks)
 
-            # Check convergence (L1 norm difference)
+            # Convergence check
             diff = np.abs(new_ranks - ranks).sum()
             print(f"Iteration {iteration+1}: diff={diff:.6e}")
 
@@ -77,25 +77,5 @@ class PageRank:
                 print(f"Converged after {iteration+1} iterations.")
                 break
 
-        # Return as dictionary {node_id: rank_score}
+        # Return {node: score}
         return {node: ranks[idx] for node, idx in self.node_to_index.items()}
-
-def main():
-    pr = PageRank(
-        max_edges=None,         # entire dataset
-        max_iterations=100,     # Limit iterations
-        min_diff=1e-6,           # Convergence tolerance
-        d=0.85,                  # Damping factor
-        cache_file="pagerank_cache.pkl"
-    )
-    pr.load_graph()
-    ranks = pr.calculate_pagerank()
-
-    # Show top 10 ranked nodes
-    top_100 = sorted(ranks.items(), key=lambda x: x[1], reverse=True)[:100]
-    print("\nTop 100 nodes by PageRank score:")
-    for node, score in top_100:
-        print(f"Node {node}: {score:.6f}")
-
-if __name__ == "__main__":
-    main()
