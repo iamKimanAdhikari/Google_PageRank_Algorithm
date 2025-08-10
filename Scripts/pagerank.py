@@ -23,7 +23,25 @@ class PageRank:
 
         #To ensure that the nodes aren't repeated
         self.nodes = set()
+
+        #Zip is used to aggregate the elements from the dataframe in a tuple
+        for source, destination in zip(self.df["From"], self.df["To"]):
+            #Source is the key and destination is included in a list
+            self.graph[source].append(destination)
+
+            #Adding source and destination to the nodes set to remove repitition
+            self.nodes.add(source)
+            self.nodes.add(destination)
+    
+    def calculate_pagerank(self):
+        N = len(self.nodes) #counting the number of unique nodes
+        self.node_to_index = {node: i for i,node in enumerate(self.nodes)}
+        self.index_to_node = {i:node for node, i in self.node_to_index.items()} 
         
+        #creating a list for the initial page rank of the nodes
+        ranks = [1.0/N]*N
+        #container to store the calculated rank of the nodes
+        new_ranks = [0.0] * N
 
 def main():
     PageRank()
