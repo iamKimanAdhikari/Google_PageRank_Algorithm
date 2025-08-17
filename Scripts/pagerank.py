@@ -49,7 +49,7 @@ class PageRank:
         out_degree_map = out_degree.to_dict()
 
         # Assign weights
-        weights = [5.0 / out_degree_map[src] for src in df["From"]]
+        weights = [1.0 / out_degree_map[src] for src in df["From"]]
 
         # Build sparse matrix
         self.M = csr_matrix((weights, (col_idx, row_idx)), shape=(self.N, self.N))
