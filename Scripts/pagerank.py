@@ -68,14 +68,7 @@ class PageRank:
             # PR formula
             new_ranks = teleport + self.d * self.M.dot(ranks)
 
-            # Convergence check
-            diff = np.abs(new_ranks - ranks).sum()
-            print(f"Iteration {iteration+1}: diff={diff:.6e}")
-
-            ranks = new_ranks
-            if diff < self.min_diff:
-                print(f"Converged after {iteration+1} iterations.")
-                break
+         
 
         # Return {node: score}
         return {node: ranks[idx] for node, idx in self.node_to_index.items()}
