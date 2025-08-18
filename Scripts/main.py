@@ -3,7 +3,7 @@ from animate_pagerank import PageRankAnimator
 
 def main():
     # Initialize PageRank
-    pr = PageRank(max_iterations=25)
+    pr = PageRank(max_iterations=100)
     
     # Create animator with top k nodes
     animator = PageRankAnimator(pr, top_k=25)
@@ -12,8 +12,7 @@ def main():
     animator.compute_with_history()
     
     print("Starting animation...")
-    print("PageRank values are scaled by ×1000 for easier reading")
-    print("(e.g., 0.001234 becomes 1.234)")
+    print("PageRank values are scaled by a factor of 1000 for easier reading")
     
     # Start the animation
     anim = animator.animate()
