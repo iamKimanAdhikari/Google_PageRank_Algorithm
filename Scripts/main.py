@@ -14,13 +14,12 @@ def main():
     print("Starting animation...")
     print("PageRank values are scaled by a factor of 1000 for easier reading")
     
-    # Start the animation
+    # Start the animation (non-repeating). 
     anim = animator.animate()
     
-    # Save the final frame after animation
+    # Save the final hierarchical Top-k frame image
     print("\nSaving final frame...")
     animator.save_final_frame('final_pagerank_results.png')
-    
 
 if __name__ == "__main__":
     main()
