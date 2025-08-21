@@ -3,6 +3,12 @@ import numpy as np
 from matplotlib.animation import FuncAnimation
 import math
 from matplotlib.patches import FancyArrowPatch
+from pathlib import Path 
+
+# path declaration
+BASE_DIR = Path(__file__).parent.parent.resolve()
+IMAGES_DIR = BASE_DIR / "images"
+IMAGES_DIR.mkdir(exist_ok=True)
 
 class PageRankAnimator:
     def __init__(self, pagerank_obj, top_k=50):
@@ -216,8 +222,9 @@ class PageRankAnimator:
 
         fig.tight_layout(rect=[0, 0, 1, 0.95])
         if filename:
-            fig.savefig(filename, dpi=300, bbox_inches='tight')
-            print(f"Saved: {filename}")
+            filepath = IMAGES_DIR / filename
+            fig.savefig(filepath, dpi=300, bbox_inches='tight')
+            print(f"Saved: {filepath}")
         if show:
             plt.show()
         else:
@@ -283,7 +290,7 @@ class PageRankAnimator:
                     self.last_frame_data['ranks_vector'],
                     k_top=10, k_in=5, k_out=5,
                     show=True,
-                    filename='top10_links_5in5out.png'
+                    filename='top10_links_5in5out.svg'
                 )
 
         anim = FuncAnimation(fig, update, frames=total_frames, interval=1200, repeat=False)
@@ -291,7 +298,7 @@ class PageRankAnimator:
         plt.show()
         return anim
 
-    def save_final_frame(self, filename='final_pagerank_frame.png'):
+    def save_final_frame(self, filename='final_pagerank_frame.svg'):
         """Save the final frame as a static image (Top 25 hierarchical view)."""
         if not self.last_frame_data:
             print("No final frame data available. Run animation first.")
@@ -340,12 +347,13 @@ class PageRankAnimator:
         ax.axis('off')
 
         plt.tight_layout()
-        plt.savefig(filename, dpi=300, bbox_inches='tight')
-        print(f"Final frame saved as: {filename}")
+        filepath = IMAGES_DIR / filename
+        plt.savefig(filepath, dpi=300, bbox_inches='tight')
+        print(f"Final frame saved as: {filepath}")
         plt.close()
 
     # Methd to save image for top 10 nodes with incoming and outgoing links
-    def save_top10_links_figure(self, filename='top10_links_5in5out.png'):
+    def save_top10_links_figure(self, filename='top10_links_5in5out.svg'):
         if not self.last_frame_data:
             print("No final frame ranks available. Run animation first.")
             return

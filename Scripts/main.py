@@ -19,7 +19,7 @@ def main():
     
     # Save the final hierarchical Top-k frame image
     print("\nSaving final frame...")
-    animator.save_final_frame('final_pagerank_results.png')
+    animator.save_final_frame('final_pagerank_results.svg')
 
 if __name__ == "__main__":
     main()
